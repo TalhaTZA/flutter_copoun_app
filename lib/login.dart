@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import './list.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -103,13 +104,20 @@ class _LoginState extends State<LoginPage> {
   }
 
   void _validateData() {
-    setState(() {
-      _nameController.text.isEmpty
-          ? _validateName = true
-          : _validateName = false;
-      _passwordController.text.isEmpty
-          ? _validatePassword = true
-          : _validatePassword = false;
-    });
+//    print('$_validateName $_validatePassword');
+    if (_nameController.text.isNotEmpty &&
+        _passwordController.text.isNotEmpty) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => ListPage()));
+    } else {
+      setState(() {
+        _nameController.text.isEmpty
+            ? _validateName = true
+            : _validateName = false;
+        _passwordController.text.isEmpty
+            ? _validatePassword = true
+            : _validatePassword = false;
+      });
+    }
   }
 }
