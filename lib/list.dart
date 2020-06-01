@@ -15,17 +15,6 @@ class _ListPageState extends State<ListPage> {
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
-        child: Container(
-            height: 70,
-            padding: EdgeInsets.all(10.0),
-            child: RaisedButton(
-              textColor: Colors.white,
-              color: Colors.blue,
-              child: Text('Login'),
-              onPressed: () {
-                showAlertDialog(context);
-              },
-            )),
       ),
     );
   }
