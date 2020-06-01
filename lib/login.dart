@@ -63,19 +63,53 @@ class _LoginState extends State<LoginPage> {
                   color: Colors.blue,
                   child: Text('Login'),
                   onPressed: () {
-                    setState(() {
-                      _nameController.text.isEmpty
-                          ? _validateName = true
-                          : _validateName = false;
-                      _passwordController.text.isEmpty
-                          ? _validatePassword = true
-                          : _validatePassword = false;
-                    });
+                    _validateData();
                   },
                 ))
           ],
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _nameController.dispose();
+    _passwordController.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController.addListener(_textListenerName);
+    _passwordController.addListener(_textListenerPassword);
+  }
+
+  void _textListenerName() {
+    setState(() {
+      _nameController.text.isEmpty
+          ? _validateName = true
+          : _validateName = false;
+    });
+  }
+
+  void _textListenerPassword() {
+    setState(() {
+      _passwordController.text.isEmpty
+          ? _validatePassword = true
+          : _validatePassword = false;
+    });
+  }
+
+  void _validateData() {
+    setState(() {
+      _nameController.text.isEmpty
+          ? _validateName = true
+          : _validateName = false;
+      _passwordController.text.isEmpty
+          ? _validatePassword = true
+          : _validatePassword = false;
+    });
   }
 }
