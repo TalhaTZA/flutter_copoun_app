@@ -125,8 +125,10 @@ class _ListPageState extends State<ListPage> {
               height: 250,
               decoration: BoxDecoration(
                   image: DecorationImage(
-                      image: NetworkImage(url),
-                      fit: BoxFit.cover)),
+                      image: NetworkImage(url), fit: BoxFit.cover),
+                  border: Border.all(width: 2.0),
+                  borderRadius: BorderRadius.all(Radius.circular(2.0)
+                      )),
             ),
           );
         });
