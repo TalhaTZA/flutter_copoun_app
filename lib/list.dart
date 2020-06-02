@@ -92,7 +92,15 @@ class _ListPageState extends State<ListPage> {
               Padding(
                 child: new ListTile(
                   title: Text(_posts[index].title),
-                  subtitle: Text(_posts[index].body),
+                  leading: GestureDetector(
+                    onTap: () {
+                      _showDialog(_posts[index].url);
+                    },
+                    child: CircleAvatar(
+                      backgroundColor: Colors.black,
+                      backgroundImage: NetworkImage(_posts[index].url),
+                    ),
+                  ),
                 ),
                 padding: EdgeInsets.all(1.0),
               ),
@@ -105,5 +113,22 @@ class _ListPageState extends State<ListPage> {
         itemCount: _posts.length,
       ),
     );
+  }
+
+  void _showDialog(String url) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            child: Container(
+              width: 250,
+              height: 250,
+              decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: NetworkImage(url),
+                      fit: BoxFit.cover)),
+            ),
+          );
+        });
   }
 }
