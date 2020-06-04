@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'package:flutter_copoun_application/post.dart';
+import 'package:flutter_copoun_application/coupon.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -9,7 +10,7 @@ class ListPage extends StatefulWidget {
 }
 
 class _ListPageState extends State<ListPage> {
-  List<Post> _posts = [];
+  List<Coupon> _coupons = [];
   bool _isLoading = false;
 
   @override
@@ -46,10 +47,9 @@ class _ListPageState extends State<ListPage> {
         _isLoading = true;
       });
 
-      var _result =
-          await http.get('https://jsonplaceholder.typicode.com/posts');
+      var _result = await http.get('http://206.189.143.99:3000/copouns');
 
-      final List<Post> _fetchedPost = [];
+      final List<Coupon> _fetchedCoupons = [];
 
       final List<dynamic> _responseList = json.decode(_result.body);
 
@@ -60,15 +60,12 @@ class _ListPageState extends State<ListPage> {
       }
 
       for (var i = 0; i < _responseList.length; i++) {
-        _fetchedPost.add(Post(
-            userId: _responseList[i]['userId'],
-            id: _responseList[i]['id'],
-            title: _responseList[i]['title'],
-            body: _responseList[i]['body']));
+        _fetchedCoupons.add(Coupon(
+            title: _responseList[i]['name'], url: _responseList[i]['url']));
       }
 
       setState(() {
-        _posts = _fetchedPost;
+        _coupons = _fetchedCoupons;
         _isLoading = false;
       });
     } catch (Exception) {
@@ -87,19 +84,32 @@ class _ListPageState extends State<ListPage> {
       onRefresh: _onRefresh,
       child: ListView.builder(
         itemBuilder: (BuildContext context, int index) {
+          var _container = _coupons[index].isSvg()
+              ? Container(
+                  width: 40,
+                  height: 45,
+                  child: SvgPicture.network(
+                    _coupons[index].url,
+                    placeholderBuilder: (BuildContext context) => Container(
+                        padding: const EdgeInsets.all(1.0),
+                        child: const CircularProgressIndicator()),
+                  ),
+                )
+              : CircleAvatar(
+                  backgroundColor: Colors.black,
+                  backgroundImage: NetworkImage(_coupons[index].url),
+                );
+
           return Column(
             children: <Widget>[
               Padding(
                 child: new ListTile(
-                  title: Text(_posts[index].title),
+                  title: Text(_coupons[index].title),
                   leading: GestureDetector(
                     onTap: () {
-                      _showDialog(_posts[index].url);
+                      _showDialog(_coupons[index]);
                     },
-                    child: CircleAvatar(
-                      backgroundColor: Colors.black,
-                      backgroundImage: NetworkImage(_posts[index].url),
-                    ),
+                    child: _container,
                   ),
                 ),
                 padding: EdgeInsets.all(1.0),
@@ -110,26 +120,41 @@ class _ListPageState extends State<ListPage> {
             ],
           );
         },
-        itemCount: _posts.length,
+        itemCount: _coupons.length,
       ),
     );
   }
 
-  void _showDialog(String url) {
+  void _showDialog(Coupon coupon) {
+    var _container = coupon.isSvg()
+        ? Container(
+            width: 250,
+            height: 250,
+            decoration: BoxDecoration(
+                border: Border.all(width: 2.0),
+                borderRadius: BorderRadius.all(Radius.circular(2.0))),
+            child: SvgPicture.network(
+              coupon.url,
+              placeholderBuilder: (BuildContext context) => Container(
+                  padding: const EdgeInsets.all(1.0),
+                  child: const CircularProgressIndicator()),
+            ),
+          )
+        : Container(
+            width: 250,
+            height: 250,
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: NetworkImage(coupon.url), fit: BoxFit.cover),
+                border: Border.all(width: 2.0),
+                borderRadius: BorderRadius.all(Radius.circular(2.0))),
+          );
+
     showDialog(
         context: context,
         builder: (BuildContext context) {
           return Dialog(
-            child: Container(
-              width: 250,
-              height: 250,
-              decoration: BoxDecoration(
-                  image: DecorationImage(
-                      image: NetworkImage(url), fit: BoxFit.cover),
-                  border: Border.all(width: 2.0),
-                  borderRadius: BorderRadius.all(Radius.circular(2.0)
-                      )),
-            ),
+            child: _container,
           );
         });
   }
